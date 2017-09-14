@@ -16,18 +16,16 @@
 #include "include/Carro.h"
 #include "include/Parque.h"
 
-#define MAX_NUM_VOLTAS 2
 #define NUM_PASSAGEIROS 10
 
 using namespace std;
 
 int Passageiro::ticket[10] = {0};
 bool Passageiro::entrada[10] = {0};
-
-atomic<int> numPassageiros = ATOMIC_VAR_INIT(Carro::numPassageiros);
+/*
 atomic<int> numPessoas = ATOMIC_VAR_INIT(Parque::numPessoas);
 atomic<int> next_id = ATOMIC_VAR_INIT(0);
-
+*/
 Passageiro::Passageiro(int id, Carro *c) {
 	this->id = id;
 	this->carro = c;
@@ -40,24 +38,39 @@ void Passageiro::entraNoCarro() {
 
 	// Protocolo de entrada o Algoritmo da Padaria
 
+	/*
 	this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
+	*/
+	int max = 0;
 
-	// Pegar uma ficha
+	// Sinaliza a intencao de pegar uma ficha
 	Passageiro::entrada[id] = true;
 
 	// Pegar a maior ficha disponivel
-	atomic_fetch_add(&next_id, 1);
-	Passageiro::ticket[id] = next_id;
+	for(auto &pass : Parque::getPassageiros()){
+		max = pass->ticket[id] > max ? pass->ticket[id] : max;
+	}
+	atomic_fetch_add(&Passageiro::ticket[id], 1);
 
-	// Não quer mais pegar ficha
+	// Sinaliza que não tem mais intencao de pegar ficha
 	Passageiro::entrada[id] = false;
 
 	// Fins de depuração
+/*
 	thread::id this_id = this_thread::get_id();
 	cout << "A thread " << this_id << " pegou o ticket: " << Passageiro::ticket[id] << endl;
-
+	
 	this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
-
+*/
+	for(auto &pass : Parque::getPassageiros()){
+		if(Passageiro::id != pass->id){
+			while((pass->ticket[id] != 0 && (Passageiro::ticket[id] > pass->ticket[id] || (ticket[id] == pass->ticket[id] && Passageiro::id > pass->id)))
+				|| Carro::numPassageiros >= Carro::CAPACIDADE || Carro::voltaAcabou){
+				;
+			}
+		}
+	}
+	/*
 	for(int j = 0; j < NUM_PASSAGEIROS; j++){
 		if(j == id) continue;
 
@@ -88,11 +101,10 @@ void Passageiro::entraNoCarro() {
 		cout << this_id << " entrou no carro!" << endl;
 
 		this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
-
+*/
 		// Incrementa o numero de passageiros no carro
-		atomic_fetch_add(&numPassageiros, 1);
-		Carro::numPassageiros = numPassageiros;
-
+		atomic_fetch_add(&Carro::numPassageiros, 1);
+/*
 		if(Carro::numPassageiros < Carro::CAPACIDADE) {
 
 			cout << "Ticket " << Passageiro::ticket[id] << " foi liberado" << endl;
@@ -100,25 +112,31 @@ void Passageiro::entraNoCarro() {
 			// Devolver a ficha
 			Passageiro::ticket[id] = 0;
 		}
-
+*/
+		Passageiro::ticket[id] = 0;
 		cout << "O carro possui " << Carro::numPassageiros << " passageiros atualmente." << endl;
 	}
 }
 
-void Passageiro::saiDoCarro() {
+void Passageiro::esperaVoltaAcabar(){
+	while(!Carro::voltaAcabou){
+		;
+	}
+}
 
+void Passageiro::saiDoCarro() {
+/*
 	while(!Carro::voltaAcabou) {
 		this_thread::sleep_for(chrono::seconds(5));
 	}
-
+*/
 	// Fins de depuração
 	thread::id this_id = this_thread::get_id();
 	cout << this_id << " saindo do carro" << endl;
 
 	// Decrementa o numero de passageiros no carro
-	atomic_fetch_add(&numPassageiros, -1);
-	Carro::numPassageiros = numPassageiros;
-
+	atomic_fetch_add(&Carro::numPassageiros, -1);
+/*
 	this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
 
 	while(Carro::numPassageiros > 0) {
@@ -131,7 +149,7 @@ void Passageiro::saiDoCarro() {
 
 	// Devolver a ficha
 	Passageiro::ticket[id] = 0;
-
+*/
 }
 
 void Passageiro::passeiaPeloParque() {
@@ -139,8 +157,13 @@ void Passageiro::passeiaPeloParque() {
 	// Fins de depuração
 	thread::id this_id = this_thread::get_id();
 	cout << this_id << " passeia pelo parque aleatoriamente." << endl;
-
-	this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
+	while (Carro::lock.test_and_set()) {
+		;
+	}
+	if(Carro::getNVoltas() < 5){
+		this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
+	}
+	Carro::lock.clear();
 }
 
 bool Passageiro::parqueFechado() {
@@ -148,20 +171,28 @@ bool Passageiro::parqueFechado() {
 }
 
 void Passageiro::run() {
+	int qtdVoltas = 0;
 	while (!parqueFechado()) {
 
 		entraNoCarro(); // Protocolo de Entrada
 
-		saiDoCarro(); // Protocolo de Saída
+		esperaVoltaAcabar();
 
+		saiDoCarro(); // Protocolo de Saída
+		qtdVoltas++;
 		passeiaPeloParque(); // Seção Não Crítica
 	}
 
 	// Decrementa o numero de pessoas no parque
-	atomic_fetch_add(&numPessoas, -1);
-	Parque::numPessoas = numPessoas;
-
+	atomic_fetch_add(&Parque::numPessoas, -1);
+/*
 	// Fins de depuração
 	cout << "Existem " << Parque::numPessoas << " pessoas no parque." << endl;
+*/
+	while(Carro::lock.test_and_set()){
+		;
+	}
+	cout << "Quantidade de voltas da Thread " <<this->id << " : " << qtdVoltas << endl;
+	Carro::lock.clear();
 }
 
