@@ -40,7 +40,6 @@ void Passageiro::entraNoCarro() {
 		}
 	}
 	Passageiro::ticket = max + 1;
-	atomic_fetch_add(&Passageiro::ticket, 1);
 	thread::id this_id = this_thread::get_id();
 
 	cout << "A thread " << this_id << " pegou o ticket: " << Passageiro::ticket << endl;
@@ -59,7 +58,7 @@ void Passageiro::entraNoCarro() {
 		atomic_fetch_add(&Carro::numPassageiros, 1);
 
 		// Protocolo de Saída
-		Passageiro::ticket[id] = 0;
+		Passageiro::ticket = 0;
 
 		cout << "O carro possui " << Carro::numPassageiros << " passageiros atualmente." << endl;
 }
