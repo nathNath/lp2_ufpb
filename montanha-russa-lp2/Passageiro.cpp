@@ -61,7 +61,7 @@ void Passageiro::entraNoCarro() {
 */
 	for(auto &pass : parque->getPassageiros()){
 		if(Passageiro::id != pass->id){
-			while((Passageiro::ticket[id] != 0 && (Passageiro::ticket[id] > pass->ticket[id] || (ticket[id] == pass->ticket[id] && Passageiro::id > pass->id)))
+			while((pass->ticket[id] != 0 && (Passageiro::ticket[id] > pass->ticket[id] || (ticket[id] == pass->ticket[id] && Passageiro::id > pass->id)))
 				|| Carro::numPassageiros >= Carro::CAPACIDADE || Carro::voltaAcabou){
 				;
 			}
