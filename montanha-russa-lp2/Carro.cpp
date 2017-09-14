@@ -24,9 +24,9 @@ const int Carro::MAX_VOLTAS = 10;
 
 //Variaveis atomicas, para controle do fluxo
 atomic<int> Carro::numPassageiros(0);
-atomic_bool Carro::voltaAcabou(false);
 atomic_flag Carro::lock;
 
+bool Carro::voltaAcabou = false;
 int Carro::voltas = 0;
 
 Carro::Carro() {
