@@ -35,20 +35,20 @@ void Passageiro::entraNoCarro() {
 
 	// Pegar a maior ficha disponivel
 	for(auto &pass : parque->getPassageiros()){
-		if(pass->ticket[id] > max){
-			max = pass->ticket[id];
+		if(pass->ticket > max){
+			max = pass->ticket;
 		}
 	}
-
-	atomic_fetch_add(&Passageiro::ticket[id], 1);
+	Passageiro::ticket = max + 1;
+	atomic_fetch_add(&Passageiro::ticket, 1);
 	thread::id this_id = this_thread::get_id();
 
-	cout << "A thread " << this_id << " pegou o ticket: " << Passageiro::ticket[id] << endl;
+	cout << "A thread " << this_id << " pegou o ticket: " << Passageiro::ticket << endl;
 
 	for(auto &pass : parque->getPassageiros()){
 
 		if(Passageiro::id != pass->id){
-			while((pass->ticket[id] != 0 && (Passageiro::ticket[id] > pass->ticket[id] || (ticket[id] == pass->ticket[id] && Passageiro::id > pass->id)))
+			while((pass->ticket != 0 && (Passageiro::ticket > pass->ticket || (ticket == pass->ticket && Passageiro::id > pass->id)))
 				|| Carro::numPassageiros >= Carro::CAPACIDADE || Carro::voltaAcabou){
 				;
 			}

@@ -22,7 +22,7 @@ private:
 	Parque *parque;
 public:
 
-	atomic<int> ticket[];
+	int ticket;
 
 	Passageiro(int id, Carro *c, Parque *p);
 	virtual ~Passageiro();
