@@ -14,11 +14,11 @@ int main() {
 	Passageiro *passageiros[10];
 
     for (int i = 0; i < 10; i++) {
-    	passageiros[i] = new Passageiro(i, &carro);
+    	passageiros[i] = new Passageiro(i, &carro, &parque);
     	parque.addPassageiro(passageiros[i]);
     }
 
-    thread tCarro(carro);
+    thread tCarro(&Carro::run, carro);
 
     vector<thread> tPassageiros;
     for (auto &p : parque.getPassageiros()){

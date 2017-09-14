@@ -26,7 +26,7 @@ atomic<int> Carro::numPassageiros = ATOMIC_VAR_INIT(0);
 atomic_bool Carro::voltaAcabou = ATOMIC_VAR_INIT(false);
 atomic_flag Carro::lock;
 
-int Carro:voltas = 0;
+int Carro::voltas = 0;
 
 Carro::Carro() {
 	this->voltas = 0;

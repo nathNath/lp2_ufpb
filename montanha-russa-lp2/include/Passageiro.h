@@ -8,6 +8,10 @@
 #ifndef PASSAGEIRO_H_
 #define PASSAGEIRO_H_
 
+#include <atomic>
+
+using namespace std;
+
 class Carro;
 class Parque;
 
@@ -15,12 +19,13 @@ class Passageiro {
 private:
 	int id;
 	Carro *carro;
+	Parque *parque;
 public:
 
-	static int ticket[];
+	static atomic<int> ticket[];
 	static bool entrada[];
 
-	Passageiro(int id, Carro *c);
+	Passageiro(int id, Carro *c, Parque *p);
 	virtual ~Passageiro();
 	void entraNoCarro();
 	void esperaVoltaAcabar();

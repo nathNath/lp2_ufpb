@@ -20,15 +20,13 @@
 
 using namespace std;
 
-int Passageiro::ticket[10] = {0};
+atomic<int> Passageiro::ticket[10];
 bool Passageiro::entrada[10] = {0};
-/*
-atomic<int> numPessoas = ATOMIC_VAR_INIT(Parque::numPessoas);
-atomic<int> next_id = ATOMIC_VAR_INIT(0);
-*/
-Passageiro::Passageiro(int id, Carro *c) {
+
+Passageiro::Passageiro(int id, Carro *c, Parque *p) {
 	this->id = id;
 	this->carro = c;
+	this->parque = p;
 }
 
 Passageiro::~Passageiro() {
@@ -38,17 +36,16 @@ void Passageiro::entraNoCarro() {
 
 	// Protocolo de entrada o Algoritmo da Padaria
 
-	/*
-	this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
-	*/
 	int max = 0;
 
 	// Sinaliza a intencao de pegar uma ficha
 	Passageiro::entrada[id] = true;
 
 	// Pegar a maior ficha disponivel
-	for(auto &pass : Parque::getPassageiros()){
-		max = pass->ticket[id] > max ? pass->ticket[id] : max;
+	for(auto &pass : parque->getPassageiros()){
+		if(pass->ticket[id] > max){
+			max = pass->ticket[id];
+		}
 	}
 	atomic_fetch_add(&Passageiro::ticket[id], 1);
 
@@ -62,9 +59,9 @@ void Passageiro::entraNoCarro() {
 	
 	this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
 */
-	for(auto &pass : Parque::getPassageiros()){
+	for(auto &pass : parque->getPassageiros()){
 		if(Passageiro::id != pass->id){
-			while((pass->ticket[id] != 0 && (Passageiro::ticket[id] > pass->ticket[id] || (ticket[id] == pass->ticket[id] && Passageiro::id > pass->id)))
+			while((Passageiro::ticket[id] != 0 && (Passageiro::ticket[id] > pass->ticket[id] || (ticket[id] == pass->ticket[id] && Passageiro::id > pass->id)))
 				|| Carro::numPassageiros >= Carro::CAPACIDADE || Carro::voltaAcabou){
 				;
 			}
@@ -115,7 +112,6 @@ void Passageiro::entraNoCarro() {
 */
 		Passageiro::ticket[id] = 0;
 		cout << "O carro possui " << Carro::numPassageiros << " passageiros atualmente." << endl;
-	}
 }
 
 void Passageiro::esperaVoltaAcabar(){
@@ -137,7 +133,6 @@ void Passageiro::saiDoCarro() {
 	// Decrementa o numero de passageiros no carro
 	atomic_fetch_add(&Carro::numPassageiros, -1);
 /*
-	this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
 
 	while(Carro::numPassageiros > 0) {
 		this_thread::sleep_for(chrono::seconds(5));
@@ -160,14 +155,14 @@ void Passageiro::passeiaPeloParque() {
 	while (Carro::lock.test_and_set()) {
 		;
 	}
-	if(Carro::getNVoltas() < 5){
+	if(carro->getNVoltas() < 5){
 		this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
 	}
 	Carro::lock.clear();
 }
 
 bool Passageiro::parqueFechado() {
-	return Carro::voltas >= MAX_NUM_VOLTAS;
+	return carro->getNVoltas() >= Carro::MAX_VOLTAS;
 }
 
 void Passageiro::run() {

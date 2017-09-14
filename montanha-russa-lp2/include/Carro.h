@@ -8,11 +8,15 @@
 #ifndef CARRO_H_
 #define CARRO_H_
 
+#include <atomic>
+
+using namespace std;
+
 class Parque;
 
 class Carro {
 private:
-	int voltas;
+	static int voltas;
 public:
 	static const int CAPACIDADE;
 	static const int MAX_VOLTAS;
