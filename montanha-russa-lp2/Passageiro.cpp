@@ -16,11 +16,7 @@
 #include "include/Carro.h"
 #include "include/Parque.h"
 
-#define NUM_PASSAGEIROS 10
-
 using namespace std;
-
-atomic<int> Passageiro::ticket[10];
 
 Passageiro::Passageiro(int id, Carro *c, Parque *p) {
 	this->id = id;
@@ -33,7 +29,7 @@ Passageiro::~Passageiro() {
 
 void Passageiro::entraNoCarro() {
 
-	// Protocolo de entrada o Algoritmo da Padaria
+	// Protocolo de entrada do Algoritmo de Lamport da Padaria
 
 	int max = 0;
 
@@ -43,9 +39,10 @@ void Passageiro::entraNoCarro() {
 			max = pass->ticket[id];
 		}
 	}
-	atomic_fetch_add(&Passageiro::ticket[id], 1);
 
+	atomic_fetch_add(&Passageiro::ticket[id], 1);
 	thread::id this_id = this_thread::get_id();
+
 	cout << "A thread " << this_id << " pegou o ticket: " << Passageiro::ticket[id] << endl;
 
 	for(auto &pass : parque->getPassageiros()){
@@ -61,7 +58,9 @@ void Passageiro::entraNoCarro() {
 		// Incrementa o numero de passageiros no carro
 		atomic_fetch_add(&Carro::numPassageiros, 1);
 
+		// Protocolo de Saída
 		Passageiro::ticket[id] = 0;
+
 		cout << "O carro possui " << Carro::numPassageiros << " passageiros atualmente." << endl;
 }
 
@@ -78,7 +77,7 @@ void Passageiro::saiDoCarro() {
 	cout << this_id << " saindo do carro" << endl;
 
 	// Decrementa o numero de passageiros no carro
-	atomic_fetch_add(&Carro::numPassageiros, -1);
+	atomic_fetch_sub(&Carro::numPassageiros, 1);
 
 }
 
@@ -112,12 +111,14 @@ void Passageiro::run() {
 		esperaVoltaAcabar();
 
 		saiDoCarro(); // Protocolo de Saída
+
 		qtdVoltas++;
+
 		passeiaPeloParque(); // Seção Não Crítica
 	}
 
 	// Decrementa o numero de pessoas no parque
-	atomic_fetch_add(&Parque::numPessoas, -1);
+	atomic_fetch_sub(&Parque::numPessoas, 1);
 
 	while(Carro::lock.test_and_set()){
 		;

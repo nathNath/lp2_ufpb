@@ -9,6 +9,7 @@
 #include <chrono>
 #include <thread>
 #include <atomic>
+
 #include "include/Thread.h"
 #include "include/Carro.h"
 #include "include/Parque.h"
@@ -43,8 +44,11 @@ void Carro::esperaEncher() {
 
 
 void Carro::daUmaVolta() {
+
 	Carro::voltaAcabou = false;
+
 	this_thread::sleep_for(chrono::seconds(TEMPO_VOLTA));
+
 	Carro::voltaAcabou = true;
 }
 
