@@ -17,10 +17,11 @@
 using namespace std;
 
 //Tempo para uma volta dentro do carro
-#define TEMPO_VOLTA 3
+// #define TEMPO_VOLTA 3
 
+const int Carro::TEMPO_VOLTA = 3;
 const int Carro::CAPACIDADE = 5;
-const int Carro::MAX_VOLTAS = 1;
+const int Carro::MAX_VOLTAS = 2;
 
 //Variaveis atomicas, para controle do fluxo
 atomic<int> Carro::numPassageiros(0);
@@ -47,7 +48,7 @@ void Carro::daUmaVolta() {
 
 	Carro::voltaAcabou = false;
 
-	this_thread::sleep_for(chrono::seconds(TEMPO_VOLTA));
+	this_thread::sleep_for(chrono::seconds(Carro::TEMPO_VOLTA));
 
 	Carro::voltaAcabou = true;
 }
@@ -74,17 +75,22 @@ void Carro::run() {
 			break;
 		}
 		// Verifica se alguém está travando a variável
-		while(Carro::lock.test_and_set()){
-			;
-		}
+		while(Carro::lock.test_and_set()){;}
+
 		cout << "CARRO: Esperando a volta " << Carro::voltas << " ser completada" << endl;
+
 		Carro::lock.clear();
 		
 
 		daUmaVolta();
 		Carro::voltas++;
 
+		while(Carro::lock.test_and_set()){;}
+
 		cout << "CARRO: Esperando o carro ser esvaziado" << endl;
+
+		Carro::lock.clear();
+
 		esperaEsvaziar();
 		Carro::voltaAcabou = false;
 

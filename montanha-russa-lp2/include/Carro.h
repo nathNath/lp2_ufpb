@@ -20,6 +20,7 @@ private:
 public:
 	static const int CAPACIDADE;
 	static const int MAX_VOLTAS;
+	static const int TEMPO_VOLTA;
 	static atomic<int> numPassageiros;
 	static atomic_bool voltaAcabou;
 	static atomic_flag lock;

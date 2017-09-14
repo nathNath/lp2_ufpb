@@ -35,7 +35,11 @@ int main() {
     	delete passageiros[i];
     }
 
+    while(Carro::lock.test_and_set()){;}
+
     cout << "O parque encerrou suas atividades." << endl;
+
+    Carro::lock.clear();
 
 	return 0;
 }

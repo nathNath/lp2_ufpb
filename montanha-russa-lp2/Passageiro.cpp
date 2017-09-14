@@ -43,7 +43,11 @@ void Passageiro::entraNoCarro() {
 	}
 	Passageiro::ticket = max + 1;
 
+	while(Carro::lock.test_and_set()){;}
+
 	cout << "O passageiro " << this->id << " pegou o ticket: " << Passageiro::ticket << endl;
+
+	Carro::lock.clear();
 
 	for(auto &pass : parque->getPassageiros()){
 
@@ -61,7 +65,11 @@ void Passageiro::entraNoCarro() {
 		// Protocolo de Saída
 		Passageiro::ticket = 0;
 
-		cout << "O carro possui " << Carro::numPassageiros << " passageiros atualmente." << endl;
+		while(Carro::lock.test_and_set()){;}
+
+		cout << "O carro tem " << Carro::numPassageiros << " passageiros atualmente." << endl;
+
+		Carro::lock.clear();
 }
 
 void Passageiro::esperaVoltaAcabar(){
@@ -73,7 +81,12 @@ void Passageiro::esperaVoltaAcabar(){
 void Passageiro::saiDoCarro() {
 
 	// Fins de depuração
-	cout << "O passageiro " << this->id << " esta saindo do carro" << endl;
+
+	while(Carro::lock.test_and_set()){;}
+
+	cout << "O passageiro " << this->id << " saiu do carro." << endl;
+
+	Carro::lock.clear();
 
 	// Decrementa o numero de passageiros no carro
 	atomic_fetch_sub(&Carro::numPassageiros, 1);
@@ -83,14 +96,14 @@ void Passageiro::saiDoCarro() {
 void Passageiro::passeiaPeloParque() {
 
 	// Fins de depuração
-	cout << this->id << " passeia pelo parque aleatoriamente." << endl;
+	cout << "O passageiro " << this->id << " passeia pelo parque." << endl;
 
-	while (Carro::lock.test_and_set()) {
-		;
-	}
+	while (Carro::lock.test_and_set()) {;}
+
 	if(carro->getNVoltas() < Carro::MAX_VOLTAS){
 		this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
 	}
+
 	Carro::lock.clear();
 }
 
@@ -120,14 +133,13 @@ void Passageiro::run() {
 
 	// Decrementa o numero de pessoas no parque
 	atomic_fetch_sub(&Parque::numPessoas, 1);
+
+	while(Carro::lock.test_and_set()){;}
+
 	cout << "Num pessoas no parque: " << Parque::numPessoas << endl;
-
-	while(Carro::lock.test_and_set()){
-		;
-	}
-
 	cout << "Qtde de voltas no CARRO: " << qtdVoltas << endl;
 
 	Carro::lock.clear();
+
 }
 
