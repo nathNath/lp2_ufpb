@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.743830452/PATH/delimiter=;
+environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.743830452/PATH/operation=replace
+environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.743830452/PATH/value=C\:/Program Files/Java/jdk1.8.0_144/bin/../jre/bin/server;C\:/Program Files/Java/jdk1.8.0_144/bin/../jre/bin;C\:/Program Files/Java/jdk1.8.0_144/bin/../jre/lib/amd64;C\:\\MinGW\\bin;C\:\\Program Files\\Java\\jdk1.8.0_144\\bin;C\:\\Program Files\\Java\\jre1.8.0_144\\bin;C\:\\Users\\Nath\u00E1lia\\AppData\\Local\\Microsoft\\WindowsApps;C\:\\Windows\\System32
+environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.743830452/append=true
+environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.743830452/appendContributed=true
