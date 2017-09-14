@@ -2,7 +2,7 @@
  * Carro.cpp
  *
  *  Created on: 17 de abr de 2017
- *      Author: bruno
+ *      Author: Bruno, Nathália e Janse
  */
 
 #include <iostream>
@@ -20,7 +20,7 @@ using namespace std;
 #define TEMPO_VOLTA 3
 
 const int Carro::CAPACIDADE = 5;
-const int Carro::MAX_VOLTAS = 10;
+const int Carro::MAX_VOLTAS = 2;
 
 //Variaveis atomicas, para controle do fluxo
 atomic<int> Carro::numPassageiros(0);
@@ -88,6 +88,8 @@ void Carro::run() {
 		esperaEsvaziar();
 		Carro::voltaAcabou = false;
 
-
 	}
+
+	cout << "CARRO: Atividades encerradas." << endl;
+
 }

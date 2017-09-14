@@ -35,5 +35,7 @@ int main() {
     	delete passageiros[i];
     }
 
+    cout << "O parque encerrou suas atividades." << endl;
+
 	return 0;
 }

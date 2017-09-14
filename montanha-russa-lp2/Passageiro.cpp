@@ -2,7 +2,7 @@
  * Passageiro.cpp
  *
  *  Created on: 17 de abr de 2017
- *      Author: bruno
+ *      Authors: Bruno, Nathália e Janse
  */
 
 #include <iostream>
@@ -18,10 +18,12 @@
 
 using namespace std;
 
+
 Passageiro::Passageiro(int id, Carro *c, Parque *p) {
 	this->id = id;
 	this->carro = c;
 	this->parque = p;
+	this->ticket = 0;
 }
 
 Passageiro::~Passageiro() {
@@ -40,9 +42,8 @@ void Passageiro::entraNoCarro() {
 		}
 	}
 	Passageiro::ticket = max + 1;
-	thread::id this_id = this_thread::get_id();
 
-	cout << "A thread " << this_id << " pegou o ticket: " << Passageiro::ticket << endl;
+	cout << "O passageiro " << this->id << " pegou o ticket: " << Passageiro::ticket << endl;
 
 	for(auto &pass : parque->getPassageiros()){
 
@@ -72,8 +73,7 @@ void Passageiro::esperaVoltaAcabar(){
 void Passageiro::saiDoCarro() {
 
 	// Fins de depuração
-	thread::id this_id = this_thread::get_id();
-	cout << this_id << " saindo do carro" << endl;
+	cout << "O passageiro " << this->id << " esta saindo do carro" << endl;
 
 	// Decrementa o numero de passageiros no carro
 	atomic_fetch_sub(&Carro::numPassageiros, 1);
@@ -83,20 +83,21 @@ void Passageiro::saiDoCarro() {
 void Passageiro::passeiaPeloParque() {
 
 	// Fins de depuração
-	thread::id this_id = this_thread::get_id();
-	cout << this_id << " passeia pelo parque aleatoriamente." << endl;
+	cout << this->id << " passeia pelo parque aleatoriamente." << endl;
 
 	while (Carro::lock.test_and_set()) {
 		;
 	}
-	if(carro->getNVoltas() < 5){
+	if(carro->getNVoltas() < Carro::MAX_VOLTAS){
 		this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
 	}
 	Carro::lock.clear();
 }
 
 bool Passageiro::parqueFechado() {
+
 	return carro->getNVoltas() >= Carro::MAX_VOLTAS;
+
 }
 
 void Passageiro::run() {
@@ -118,11 +119,12 @@ void Passageiro::run() {
 
 	// Decrementa o numero de pessoas no parque
 	atomic_fetch_sub(&Parque::numPessoas, 1);
+	cout << "Num pessoas no parque: " << Parque::numPessoas << endl;
 
 	while(Carro::lock.test_and_set()){
 		;
 	}
-	cout << "Quantidade de voltas da Thread " << this->id << " : " << qtdVoltas << endl;
+	cout << "Quantidade de voltas do CARRO: " << qtdVoltas << endl;
 	Carro::lock.clear();
 }
 

@@ -2,7 +2,7 @@
  * Carro.h
  *
  *  Created on: 17 de abr de 2017
- *      Author: bruno
+ *      Author: Bruno, Nathália e Janse
  */
 
 #ifndef CARRO_H_
