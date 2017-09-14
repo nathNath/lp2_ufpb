@@ -115,6 +115,7 @@ void Passageiro::run() {
 		qtdVoltas++;
 
 		passeiaPeloParque(); // Seção Não Crítica
+
 	}
 
 	// Decrementa o numero de pessoas no parque
