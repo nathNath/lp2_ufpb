@@ -11,12 +11,14 @@
 class Parque;
 
 class Carro {
+private:
+	int voltas;
 public:
 	static const int CAPACIDADE;
-	static int numPassageiros;
-	static int voltaAcabou;
-	static int cheio;
-	static int voltas;
+	static const int MAX_VOLTAS;
+	static atomic<int> numPassageiros;
+	static atomic_bool voltaAcabou;
+	static atomic_flag lock;
 
 	Carro();
 	virtual ~Carro();

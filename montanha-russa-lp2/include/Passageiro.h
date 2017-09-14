@@ -12,6 +12,9 @@ class Carro;
 class Parque;
 
 class Passageiro {
+private:
+	int id;
+	Carro *carro;
 public:
 
 	static int ticket[];
@@ -21,15 +24,12 @@ public:
 	virtual ~Passageiro();
 	void entraNoCarro();
 	void esperaVoltaAcabar();
-	void esperaVoltaIniciar();
 	void saiDoCarro();
 	void passeiaPeloParque();
 	bool parqueFechado();
 
 	void run();
-private:
-	int id;
-	Carro *carro;
+
 };
 
 #endif /* PASSAGEIRO_H_ */

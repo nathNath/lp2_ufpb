@@ -15,8 +15,10 @@ class Passageiro;
 using namespace std;
 
 class Parque {
+private:
+	std::vector<Passageiro*> passageiros;
 public:
-	static int numPessoas;
+	static atomic<int> numPessoas;
 
 	Parque();
 	virtual ~Parque();
@@ -24,8 +26,6 @@ public:
 	void addPassageiro(Passageiro *p);
 	std::vector<Passageiro*>& getPassageiros();
 
-private:
-	std::vector<Passageiro*> passageiros;
 };
 
 #endif /* PARQUE_H_ */
