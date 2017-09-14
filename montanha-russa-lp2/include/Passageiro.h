@@ -23,6 +23,7 @@ private:
 public:
 
 	int ticket;
+	int qtdVoltas;
 
 	Passageiro(int id, Carro *c, Parque *p);
 	virtual ~Passageiro();
@@ -31,6 +32,7 @@ public:
 	void saiDoCarro();
 	void passeiaPeloParque();
 	bool parqueFechado();
+	int getId();
 
 	void run();
 

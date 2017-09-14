@@ -39,6 +39,10 @@ int main() {
 
     cout << "O parque encerrou suas atividades." << endl;
 
+    for (auto &p : parque.getPassageiros()){
+
+    	cout << "O passageiro " << p->getId() << " deu " << p->qtdVoltas << " voltas." <<endl;
+    }
     Carro::lock.clear();
 
 	return 0;

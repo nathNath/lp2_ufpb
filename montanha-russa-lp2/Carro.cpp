@@ -21,17 +21,17 @@ using namespace std;
 
 const int Carro::TEMPO_VOLTA = 3;
 const int Carro::CAPACIDADE = 5;
-const int Carro::MAX_VOLTAS = 2;
+const int Carro::MAX_VOLTAS = 5;
 
 //Variaveis atomicas, para controle do fluxo
 atomic<int> Carro::numPassageiros(0);
 atomic_bool Carro::voltaAcabou(false);
 atomic_flag Carro::lock;
 
-int Carro::voltas = 0;
+int Carro::voltas;
 
 Carro::Carro() {
-	this->voltas = 0;
+	this->voltas = 1;
 }
 
 Carro::~Carro() {
@@ -67,7 +67,12 @@ int Carro::getNVoltas() {
 void Carro::run() {
 	while (Parque::numPessoas.load(std::memory_order_acquire) > 0) {
 
+		while(Carro::lock.test_and_set()){;}
+
 		cout << "CARRO: Esperando lotar" << endl;
+
+		Carro::lock.clear();
+
 		esperaEncher();
 
 

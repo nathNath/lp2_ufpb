@@ -18,15 +18,19 @@
 
 using namespace std;
 
-
 Passageiro::Passageiro(int id, Carro *c, Parque *p) {
 	this->id = id;
 	this->carro = c;
 	this->parque = p;
 	this->ticket = 0;
+	this->qtdVoltas = 0;
 }
 
 Passageiro::~Passageiro() {
+}
+
+int Passageiro::getId(){
+	return id;
 }
 
 void Passageiro::entraNoCarro() {
@@ -96,9 +100,10 @@ void Passageiro::saiDoCarro() {
 void Passageiro::passeiaPeloParque() {
 
 	// Fins de depuração
-	cout << "O passageiro " << this->id << " passeia pelo parque." << endl;
 
 	while (Carro::lock.test_and_set()) {;}
+
+	cout << "O passageiro " << this->id << " passeia pelo parque." << endl;
 
 	if(carro->getNVoltas() < Carro::MAX_VOLTAS){
 		this_thread::sleep_for(chrono::seconds((rand()%10) + 1));
@@ -115,8 +120,6 @@ bool Passageiro::parqueFechado() {
 
 void Passageiro::run() {
 
-	int qtdVoltas = 0;
-
 	while (!parqueFechado()) {
 
 		entraNoCarro(); // Protocolo de Entrada
@@ -125,7 +128,7 @@ void Passageiro::run() {
 
 		saiDoCarro(); // Protocolo de Saída
 
-		qtdVoltas++;
+		this->qtdVoltas++;
 
 		passeiaPeloParque(); // Seção Não Crítica
 
@@ -137,7 +140,6 @@ void Passageiro::run() {
 	while(Carro::lock.test_and_set()){;}
 
 	cout << "Num pessoas no parque: " << Parque::numPessoas << endl;
-	cout << "Qtde de voltas no CARRO: " << qtdVoltas << endl;
 
 	Carro::lock.clear();
 
