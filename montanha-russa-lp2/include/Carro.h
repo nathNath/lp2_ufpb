@@ -2,20 +2,25 @@
  * Carro.h
  *
  *  Created on: 17 de abr de 2017
- *      Author: bruno
+ *      Author: Bruno, Nathália e Janse
  */
 
 #ifndef CARRO_H_
 #define CARRO_H_
 
+#include <atomic>
+
+using namespace std;
+
 class Parque;
 
 class Carro {
 private:
-	int voltas;
+	static int voltas;
 public:
 	static const int CAPACIDADE;
 	static const int MAX_VOLTAS;
+	static const int TEMPO_VOLTA;
 	static atomic<int> numPassageiros;
 	static atomic_bool voltaAcabou;
 	static atomic_flag lock;

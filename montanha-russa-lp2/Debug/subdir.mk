@@ -28,15 +28,8 @@ CPP_DEPS += \
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ../%.cpp
 	@echo 'Building file: $<'
-	@echo 'Invoking: GCC C++ Compiler'
+	@echo 'Invoking: Cross G++ Compiler'
 	g++ -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
-	@echo 'Finished building: $<'
-	@echo ' '
-
-Main.o: ../Main.cpp
-	@echo 'Building file: $<'
-	@echo 'Invoking: GCC C++ Compiler'
-	g++ -std=c++0x -Ipthread -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"Main.d" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
