@@ -54,9 +54,15 @@ void Passageiro::entraNoCarro() {
 		if(Passageiro::id != pass->id){
 			while((pass->ticket != 0 && (Passageiro::ticket > pass->ticket || (ticket == pass->ticket && Passageiro::id > pass->id)))
 				|| Carro::numPassageiros >= Carro::CAPACIDADE || Carro::voltaAcabou){
+				if(parqueFechado()){
+					break;
+				}
 				;
 			}
 		}
+	}
+	if(!parqueFechado()){
+		qtdVoltas++;
 	}
 
 		// Incrementa o numero de passageiros no carro
@@ -114,9 +120,6 @@ bool Passageiro::parqueFechado() {
 }
 
 void Passageiro::run() {
-
-	int qtdVoltas = 0;
-
 	while (!parqueFechado()) {
 
 		entraNoCarro(); // Protocolo de Entrada
@@ -124,8 +127,6 @@ void Passageiro::run() {
 		esperaVoltaAcabar();
 
 		saiDoCarro(); // Protocolo de Saída
-
-		qtdVoltas++;
 
 		passeiaPeloParque(); // Seção Não Crítica
 
