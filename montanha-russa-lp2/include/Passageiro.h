@@ -23,7 +23,6 @@ private:
 public:
 
 	static atomic<int> ticket[];
-	static bool entrada[];
 
 	Passageiro(int id, Carro *c, Parque *p);
 	virtual ~Passageiro();
