@@ -125,7 +125,9 @@ void Passageiro::run() {
 	while(Carro::lock.test_and_set()){
 		;
 	}
-	cout << "Quantidade de voltas do CARRO: " << qtdVoltas << endl;
+
+	cout << "Qtde de voltas no CARRO: " << qtdVoltas << endl;
+
 	Carro::lock.clear();
 }
 

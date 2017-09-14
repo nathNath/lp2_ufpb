@@ -20,7 +20,7 @@ using namespace std;
 #define TEMPO_VOLTA 3
 
 const int Carro::CAPACIDADE = 5;
-const int Carro::MAX_VOLTAS = 2;
+const int Carro::MAX_VOLTAS = 1;
 
 //Variaveis atomicas, para controle do fluxo
 atomic<int> Carro::numPassageiros(0);
@@ -77,7 +77,7 @@ void Carro::run() {
 		while(Carro::lock.test_and_set()){
 			;
 		}
-		cout << "CARRO: Esperando a volta " << Carro::voltas+1 << " ser completada" << endl;
+		cout << "CARRO: Esperando a volta " << Carro::voltas << " ser completada" << endl;
 		Carro::lock.clear();
 		
 
